@@ -1,0 +1,299 @@
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+
+</head>
+
+<body>
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper grey darken-1">
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <a href="{% url 'home' %}" class="brand-logo center"><img class="image-responsive" src="/media/images/blog.png"</a>
+                <ul id="nav-mobile" class="left hide-on-med-and-down">
+                    <li><a href="{% url 'home' %}" class="nvlinks">Home</a></li>
+                    <li><a href="{% url 'about' %}" class="nvlinks">About</a></li>
+                </ul>
+                <ul class="right hide-on-med-and-down">
+                    {% if user.is_authenticated %}
+                    <li><a href="/author/{{request.user}}" class="nvlinks nv-icons"><img src="{{ MEDIA_URL}}{{request.user.profile.image}}" class="author-nav-img img-responsive"></a></li>
+                    <li><a href="{% url 'logout' %}" class="nvlinks nv-icons">Logout</a></li>
+
+                    {% else %}
+                    <li><a href="{% url 'login' %}" class="nvlinks nv-icons">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="nvlinks nv-icons">Register</a></li>
+                    {% endif %}
+
+
+                </ul>
+            </div>
+        </nav>
+    </div>
+    
+    <ul class="sidenav" id="mobile-demo">
+        <div class="user-view">
+                <div class="background">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXciC8W7JPtz45fkCHgIMVWdbFJ2XHaTIkdgYskRdHmHt9nP1qIA">
+                </div>
+                <a href="#user"><img class="circle" src="{{ MEDIA_URL}}{{request.user.profile.image}}"></a>
+                <a href="#name"><span class="white-text name">{{user}}</span></a>
+                <a href="#email"><span class="white-text email">{{user.email}}</span></a>
+            </div>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}" class="nvlinks nv-icons">Logout</a></li>
+        {% else %}
+        <li><a href="{% url 'login' %}" class="nvlinks nv-icons">Login</a></li>
+        <li><a href="{% url 'register' %}" class="nvlinks nv-icons">Register</a></li>
+        {% endif %}
+        <li><div class="divider"></div></li>
+        <div class="nav-wrapper">
+            <form action="{% url 'search' %}" id="labnol">
+                <div class="input-field">
+                    <input id="search" type="search" name="s" required placeholder="Enter searchword">
+                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                    <i class="material-icons">close</i>
+                </div>
+            </form>
+        </div>
+        {% if user.is_authenticated %}
+        <li><a href="/author/{{request.user}}">View your posts</a></li>
+        <li><a href="{% url 'add' %}">Upload Post</a></li>
+        {% endif %}
+    </ul>
+    
+    
+
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXciC8W7JPtz45fkCHgIMVWdbFJ2XHaTIkdgYskRdHmHt9nP1qIA">
+                </div>
+                <a href="#user"><img class="circle" src="{{ MEDIA_URL}}{{request.user.profile.image}}"></a>
+                <a href="#name"><span class="white-text name">{{user}}</span></a>
+                <a href="#email"><span class="white-text email">{{user.email}}</span></a>
+            </div>
+        </li>
+        <div class="nav-wrapper">
+            <form action="{% url 'search' %}" id="labnol">
+                <div class="input-field">
+                    <input id="search" type="search" name="s" required placeholder="Enter searchword">
+                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                    <i class="material-icons">close</i>
+                </div>
+            </form>
+        </div>
+        <!--<li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Filter By<i class="material-icons right">arrow_drop_down</i></a></li>-->
+        <!--<ul id="dropdown1" class="dropdown-content">-->
+        <!--    <li><a href="#modal_month" class="modal-trigger">Month</a></li>-->
+        <!--    <li><a href="#modal_year" class="modal-trigger">Year</a></li>-->
+        <!--</ul>-->
+
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader">Filter By</a></li>
+        
+        <li><a class="dropdown-trigger-hover" href="#" data-target="dropdownauthor">Author<i class="material-icons right">arrow_drop_down</i></a></li>
+        <ul id="dropdownauthor" class="dropdown-content">
+
+            {% for author in authors %}
+            <li><a class="waves-effect" href="{{ request.path }}?{{query_string}}&author={{author.username}}">{{author.username}}</a></li>
+            {% endfor %}
+
+
+        </ul>
+        <li>
+
+
+            <li><a class="dropdown-trigger-hover" href="#" data-target="dropdownmonths">Month<i class="material-icons right">arrow_drop_down</i></a></li>
+
+            <ul id="dropdownmonths" class="dropdown-content">
+
+                <li><a class="waves-effect" href="/search/month?m=1">Januari</a></li>
+                <li><a class="waves-effect" href="/search/month?m=2">Februari</a></li>
+                <li><a class="waves-effect" href="/search/month?m=3">March</a></li>
+                <li><a class="waves-effect" href="/search/month?m=4">April</a></li>
+                <li><a class="waves-effect" href="/search/month?m=5">May</a></li>
+                <li><a class="waves-effect" href="/search/month?m=6">June</a></li>
+                <li><a class="waves-effect" href="/search/month?m=7">July</a></li>
+                <li><a class="waves-effect" href="/search/month?m=8">August</a></li>
+                <li><a class="waves-effect" href="/search/month?m=9">September</a></li>
+                <li><a class="waves-effect" href="/search/month?m=10">October</a></li>
+                <li><a class="waves-effect" href="/search/month?m=11">November</a></li>
+                <li><a class="waves-effect" href="/search/month?m=12">December</a></li>
+
+            </ul>
+
+            <li><a class="dropdown-trigger-hover" href="#" data-target="dropdownyears">Year<i class="material-icons right">arrow_drop_down</i></a></li>
+
+            <ul id="dropdownyears" class="dropdown-content">
+
+                <li><a class="waves-effect" href="/search/year?y=2015">2015</a></li>
+                <li><a class="waves-effect" href="/search/year?y=2016">2016</a></li>
+                <li><a class="waves-effect" href="/search/year?y=2017">2017</a></li>
+                <li><a class="waves-effect" href="/search/year?y=2018">2018</a></li>
+
+
+            </ul>
+            <li>
+                <div class="divider"></div>
+            </li>
+            <li><a class="subheader">Tags</a></li>
+            {% for tag in tags %}
+            <li><a class="waves-effect" href="{% url 'show_by_tag' tag %}">#{{tag}}</a></li>
+            {% endfor %}
+    </ul>
+    <div id="modal_month" class="modal">
+        <div class="modal-content">
+            <h4>Search by month:</h4>
+        </div>
+        <div class="wrapper">
+            <form action="{% url 'search_month' %}">
+                <div class="input-field">
+                    <input id="search_month" type="search" name="m" required placeholder="Send in the month number(Ex Aug. = 8). To search press enter">
+                    <label class="label-icon" for="search_month">
+            </div>
+        </form>
+        </div>
+    </div>
+    <div id="modal_year" class="modal">
+        <div class="modal-content">
+          <h4>Search by year:</h4>
+        </div>
+        <form action="{% url 'search_year' %}">
+            <div class="input-field">
+                <input id="search_year" type="search" name="y" required placeholder="To search press enter">
+                <label class="label-icon" for="search_year">
+            </div>
+        </form>
+    </div>
+    
+
+
+
+    <div class="container" id="home-container">
+
+        {% block content %}{% endblock %}
+        
+        <div class="row">
+    <div class="col offset-s5">
+        <ul class="pagination">
+            
+            {% if posts.has_previous %}
+            <li><a href="?page={{ posts.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+            {% endif %}
+            
+            {% for num in posts.paginator.page_range %}
+            {% if posts.number == num %}
+            <li class="active blue"><a href="#!">{{ num }}</a></li>
+            
+            {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+            <li class="waves-effect"><a href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if posts.has_next %}
+            <li class="waves-effect"><a href="?page={{ posts.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+            {% endif %}
+            
+        </ul>
+    </div>
+</div>
+
+
+        <div class="fixed-action-btn menu-floating hide-on-med-and-down">
+            <a class="btn-floating btn-large">
+            <i class="large material-icons">menu</i></a>
+            <ul>
+                <li><a href="{% url 'home' %}" class="btn-floating grey darken-1" title="Home"><i class="material-icons">home</i></a></li>
+                {% if user.is_authenticated %}
+                <li><a href="/profile/{{request.user}}" class="btn-floating" title="User profile"><img src="{{ MEDIA_URL}}{{request.user.profile.image}}" class="author-menu-img img-responsive"></a></li>
+                <li><a href="/author/{{request.user}}" class="btn-floating amber darken-2" title="Own posts"><i class="material-icons">folder_shared</i></a></li>
+                <li><a href="{% url 'show_by_liked' %}" class="btn-floating red darken-2" title="Liked posts"><i class="material-icons">favorite</i></a></li>
+                <li><a href="{% url 'add' %}" class="btn-floating green" title="Upload post"><i class="material-icons">publish</i></a></li>
+                {% endif %}
+                
+                <li><a href="#" data-target="slide-out" class="btn-floating blue sidenav-trigger" title="Search"><i class="material-icons">search</i></a></li>
+                
+            </ul>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.fixed-action-btn');
+            var instances = M.FloatingActionButton.init(elems, {
+                direction: 'up'
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems, options);
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.dropdown-trigger-hover');
+            var instances = M.Dropdown.init(elems, {
+                hover: true,
+                inDuration: 900,
+                outDuration: 650,
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.dropdown-trigger');
+            var instances = M.Dropdown.init(elems, {
+                inDuration: 900,
+                outDuration: 650,
+            });
+        });
+        $(document).ready(function() {
+            $('.sidenav').sidenav();
+            $('.modal').modal();
+            $('select').formSelect();
+            $('#mobile-demo').sidenav();
+        });
+    </script>
+    <script>
+        function startDictation() {
+    
+          if (window.hasOwnProperty('webkitSpeechRecognition')) {
+    
+            var recognition = new webkitSpeechRecognition();
+    
+            recognition.continuous = false;
+            recognition.interimResults = false;
+    
+            recognition.lang = "en-US";
+            recognition.start();
+    
+            recognition.onresult = function(e) {
+              document.getElementById('transcript').value
+                                       = e.results[0][0].transcript;
+              recognition.stop();
+              document.getElementById('labnol').submit();
+            };
+    
+            recognition.onerror = function(e) {
+              recognition.stop();
+            }
+    
+          }
+        }
+</script>
+</body>
+
+</html>

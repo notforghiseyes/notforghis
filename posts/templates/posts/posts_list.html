@@ -1,0 +1,92 @@
+{% extends "index.html" %}{% block content %}
+
+<div class="row">
+    <div class="col s12 center-align">
+        <h1>Blog Posts</h1>
+    </div>
+</div>
+{% if posts %}
+<div class="row">
+    <a class='dropdown-trigger btn filter-cat' href='#' data-target='sort_post'><span id="filter-bn-text">Sort by</span><i class="material-icons">unfold_more</i></a>
+    <ul id='sort_post' class='dropdown-content'>
+        <li><a href="{% url 'order_by_title' %}">Title</a></li>
+        <li><a href="{% url 'order_by_views' %}">Views</a></li>
+        <li><a href="{% url 'order_by_date' %}">Date</a></li>
+        <li><a href="{% url 'order_by_likes' %}">Likes</a></li>
+    <ul></ul>
+</div>
+{% endif %}
+<div class="row">
+    {% for post in posts %}
+    <div class="col s12 m6 l4">
+        <div class="card large hoverable">
+            <a href="{% url 'go_to_post' post.id %}">
+                <div class="card-image">
+
+                    {% if post.image %}
+                    <img class="blog-img" src="{{MEDIA_URL}}{{ post.image }}">
+                    {% else %}
+                    <img class="blog-img" src="/media/images/placeholder.png">
+                    {% endif %}
+                    <div class="card-title"><span id="post-title">{{post.title}}</span></div>
+                </div>
+            </a>
+            <div class="card-content">
+                <p>{{post.content | linebreaksbr | truncatewords:40}}</p>
+            </div>
+            <div class="card-action">
+                <p><span>{{post.published_date}}</span><span id="post-list-auth">{{post.author}} </span></p>
+                <!--<h6>Tags: </h6><a class="tags" href="#">{{post.tag}}</a>-->
+                {% if user.is_authenticated %} 
+                {% if request.user != post.author %}
+                
+                {% if not request.user in post.likes.all %}
+                <form method="POST" enctype="multipart/form-data" id="form-like-{{post.id}}" action="{% url 'like' post.id %}">
+                {% csrf_token %}
+                <span onclick="document.forms['form-like-{{post.id}}'].submit(); return false" class="btn-floating btn-small btn-like waves-effect waves-light"><i class="material-icons">favorite</i></span>
+                </form>
+                {% else %}
+                <form method="POST" enctype="multipart/form-data" id="form-liked-{{post.id}}" action="{% url 'liked' post.id %}">
+                {% csrf_token %}
+                <span onclick="document.forms['form-liked-{{post.id}}'].submit();" class="btn-floating btn-small btn-liked waves-effect waves-light"><i class="material-icons">favorite</i></span>
+                </form>
+                {% endif %}
+
+                {% endif %}
+                {% endif %}
+                
+                {% if request.user == post.author %}
+                <a href="{% url 'edit_post' post.id %}" class="btn-floating btn-small btn-edit waves-effect waves-light"><i class="material-icons">mode_edit</i></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+    
+<!--    <div class="row">-->
+<!--    <div class="col offset-s5">-->
+<!--        <ul class="pagination">-->
+            
+<!--            {% if posts.has_previous %}-->
+<!--            <li><a href="?page={{ posts.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>-->
+<!--            {% endif %}-->
+            
+<!--            {% for num in posts.paginator.page_range %}-->
+<!--            {% if posts.number == num %}-->
+<!--            <li class="active blue"><a href="#!">{{ num }}</a></li>-->
+            
+<!--            {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}-->
+<!--            <li class="waves-effect"><a href="?page={{ num }}">{{ num }}</a></li>-->
+<!--            {% endif %}-->
+<!--            {% endfor %}-->
+            
+<!--            {% if posts.has_next %}-->
+<!--            <li class="waves-effect"><a href="?page={{ posts.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>-->
+<!--            {% endif %}-->
+            
+<!--        </ul>-->
+<!--    </div>-->
+<!--</div>-->
+
+{% endblock content %}

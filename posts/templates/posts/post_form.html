@@ -1,0 +1,17 @@
+{% extends "index.html" %}{% block content %}
+
+        <div class="row">
+            <h1 class="center-align">Post A Blog!</h1>
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                {{form.as_p }}
+                
+                <button class="btn waves-effect waves-light post-submit" type="submit" name="action">Submit</button>
+            </form>
+        </div>
+
+{% endblock content %}

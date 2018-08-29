@@ -1,0 +1,17 @@
+{% extends "index.html" %}{% block content %}
+
+<div class="row center-align">
+    <p id="oops">Sorry! We couldn't find any posts..</p><br><hr><br>
+    <p>You will be redirected to home in 5 seconds. If not, click go back.</p>
+    <a href="{% url 'home' %}" class="waves-effect waves-light btn">Go back</a>
+</div>
+
+<script>
+    function redirect(){
+      window.location.href = "{% url 'home' %}";
+    }
+
+    setTimeout(redirect, 5000); //2000 is equivalent to 2 seconds
+</script>
+
+{% endblock content %}
